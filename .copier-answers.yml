@@ -1,0 +1,11 @@
+# Changes here will be overwritten by Copier; do not edit manually.
+_commit: d9c015a
+_src_path: /Users/bwagner/projects/pyskel
+author_email: gitcommit-bwagner@nosuch.biz
+author_name: Bernhard Wagner
+include_cli: true
+license_year: 2026
+project_description: 'Turn an arbitrary string into a robust filename: ASCII-only,
+    no spaces or shell-special chars.'
+project_name: mkfilename
+python_version: '3.11'

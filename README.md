@@ -48,14 +48,29 @@ mkfilename "Über Straße"          # prints: Ueber_Strasse
 mkfilename                         # reads from clipboard, writes back to clipboard
 ```
 
+## Version
+
+    mkfilename --version
+
+Prints the bare version (e.g., `0.1.0`) when the project is not inside a git
+repo, or an enriched `0.1.0 (git:<sha>[-dirty], <timestamp>)` when it is.
+
 ## Development
 
 ```bash
 git clone https://github.com/bwagner/mkfilename
 cd mkfilename
-uv sync --extra dev
+uv sync --all-extras
+uv run pre-commit install
 uv run pytest
 ```
+
+### Lint and format
+
+    uv run ruff check
+    uv run ruff format
+
+Pre-commit hooks run automatically on `git commit`.
 
 ### Editable global CLI
 
@@ -67,6 +82,12 @@ uv tool install --editable ./mkfilename --with pyperclip
 ```
 
 `mkfilename` then resolves to `~/.local/bin/mkfilename` and runs against the source in your clone — no reinstall needed after edits.
+
+## Update from pyskel
+
+This project was scaffolded from [pyskel](https://github.com/bwagner/pyskel). Pull template improvements with:
+
+    copier update
 
 ## License
 

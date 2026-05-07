@@ -1,23 +1,49 @@
-import os.path
-import sys
+"""Command-line entry point for mkfilename."""
 
-from mkfilename import make_filename
+from __future__ import annotations
+
+import argparse
+
+from . import __version__, get_version_info, make_filename
 
 
-def main():
-    if len(sys.argv) == 2:
-        print(make_filename(sys.argv[1]))
-        return
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        prog="mkfilename",
+        description=(
+            "Turn an arbitrary string into a robust filename: "
+            "ASCII-only, no spaces or shell-special chars."
+        ),
+    )
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=get_version_info(__version__),
+    )
+    parser.add_argument(
+        "title",
+        nargs="?",
+        help="String to convert. If omitted, read from clipboard and write back.",
+    )
+    args = parser.parse_args(argv)
+
+    if args.title is not None:
+        print(make_filename(args.title))
+        return 0
+
     import pyperclip
 
-    if len(sys.argv) == 1 and (clipboard := pyperclip.paste().strip()):
-        print(f"clipboard had: {clipboard}")
-        print(f"clipboard contains: {(content := make_filename(clipboard))}")
-        pyperclip.copy(content)
-    else:
-        prg = os.path.basename(sys.argv[0])
-        print(f"{prg} <string> | (without arg, clipboard is used)")
+    clipboard = pyperclip.paste().strip()
+    if not clipboard:
+        parser.print_help()
+        return 1
+    print(f"clipboard had: {clipboard}")
+    content = make_filename(clipboard)
+    print(f"clipboard contains: {content}")
+    pyperclip.copy(content)
+    return 0
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__":  # pragma: no cover
+    raise SystemExit(main())

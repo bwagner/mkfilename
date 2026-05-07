@@ -1,7 +1,27 @@
+"""Turn an arbitrary string into a robust filename.
+
+ASCII-only, no spaces or shell-special chars.
+"""
+
 import re
 import unicodedata
+from importlib.metadata import PackageNotFoundError, version
 
-__all__ = ["make_filename", "MAX_LENGTH", "EMPTY_FALLBACK", "TRANSLATIONS"]
+from .version_info import get_version_info
+
+try:
+    __version__ = version("mkfilename")
+except PackageNotFoundError:  # pragma: no cover
+    __version__ = "0.0.0+uninstalled"
+
+__all__ = [
+    "EMPTY_FALLBACK",
+    "MAX_LENGTH",
+    "TRANSLATIONS",
+    "__version__",
+    "get_version_info",
+    "make_filename",
+]
 
 MAX_LENGTH = 255
 EMPTY_FALLBACK = "untitled"
@@ -47,7 +67,10 @@ TRANSLATIONS = {
 
 
 def make_filename(title):
-    """Turn title into a robust filename: ASCII-only, no spaces or shell-special chars."""
+    """Turn title into a robust filename.
+
+    ASCII-only, no spaces or shell-special chars.
+    """
     result = title.translate(TRANSLATIONS)
     result = unicodedata.normalize("NFKD", result).encode("ascii", "ignore").decode()
     result = result.translate(TRANSLATIONS)
