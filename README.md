@@ -57,6 +57,17 @@ uv sync --extra dev
 uv run pytest
 ```
 
+### Editable global CLI
+
+To install the `mkfilename` command globally, pointing at a local checkout so edits take effect immediately:
+
+```bash
+git clone https://github.com/bwagner/mkfilename
+uv tool install --editable ./mkfilename --with pyperclip
+```
+
+`mkfilename` then resolves to `~/.local/bin/mkfilename` and runs against the source in your clone — no reinstall needed after edits.
+
 ## License
 
 MIT
