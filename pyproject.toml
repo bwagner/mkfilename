@@ -1,7 +1,7 @@
 [project]
 name = "mkfilename"
-version = "0.1.0"
-description = "Turn an arbitrary string into a robust filename: ASCII-only, no spaces or shell-special chars."
+version = "0.2.0"
+description = "Turn an arbitrary string into a robust filename: ASCII-only, lowercase, no spaces or shell-special chars."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
