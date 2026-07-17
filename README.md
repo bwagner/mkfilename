@@ -1,11 +1,12 @@
 # mkfilename
 
-Turn an arbitrary string into a robust filename: ASCII-only, no spaces or shell-special chars.
+Turn an arbitrary string into a robust filename: ASCII-only, lowercase, no spaces or shell-special chars.
 
 ```python
 from mkfilename import make_filename
 
-make_filename("Über Straße & Mäuse")   # 'Ueber_Strasse_and_Maeuse'
+make_filename("Über Straße & Mäuse")   # 'ueber_strasse_and_maeuse'
+make_filename("Rechnung Nr. 12.PDF")    # 'rechnung_nr_12.pdf'
 make_filename(".bashrc")                # '_bashrc'
 make_filename("!!!")                    # 'untitled'
 ```
@@ -15,9 +16,14 @@ make_filename("!!!")                    # 'untitled'
 - German umlauts and `ß`: `ä→ae`, `ö→oe`, `ü→ue`, `Ä→Ae`, `Ö→Oe`, `Ü→Ue`, `ß→ss`
 - Other accented Latin characters are stripped via NFKD + ASCII (`é→e`, `ñ→n`, ...)
 - Whitespace, hyphens, en/em-dashes → `_`
-- `&` → `and`, `$` → `S`
+- `&` → `and`, `$` → `s`
 - Punctuation (`!?'"():;,*/|<>\#+`) is dropped
+- Dots become `_`, except a trailing extension separator (`Nr. 1234.PDF` → `nr_1234.pdf`).
+  To count as one, the text after the last dot must be alphanumeric and run to the end,
+  so `feat. Roberto` → `feat_roberto`, and `a.b.c.d` → `a_b_c.d` rather than `abc.d`.
+  A bare `foo.bar` keeps its dot - `.bar` is indistinguishable from an extension
 - Leading/trailing `_` are stripped
+- The result is lowercased, extension included (`Foo.PDF` → `foo.pdf`)
 - Output is capped at 255 characters
 - A leading `.` is replaced with `_` so the result isn't a hidden file
 - Empty results fall back to `"untitled"`
@@ -44,7 +50,7 @@ The package installs an `mkfilename` command (requires the `cli` extra for clipb
 
 ```bash
 pip install "mkfilename[cli] @ git+https://github.com/bwagner/mkfilename"
-mkfilename "Über Straße"          # prints: Ueber_Strasse
+mkfilename "Über Straße"          # prints: ueber_strasse
 mkfilename                         # reads from clipboard, writes back to clipboard
 ```
 

@@ -12,7 +12,7 @@ def main(argv: list[str] | None = None) -> int:
         prog="mkfilename",
         description=(
             "Turn an arbitrary string into a robust filename: "
-            "ASCII-only, no spaces or shell-special chars."
+            "ASCII-only, lowercase, no spaces or shell-special chars."
         ),
     )
     parser.add_argument(

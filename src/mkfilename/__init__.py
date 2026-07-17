@@ -1,6 +1,6 @@
 """Turn an arbitrary string into a robust filename.
 
-ASCII-only, no spaces or shell-special chars.
+ASCII-only, lowercase, no spaces or shell-special chars.
 """
 
 import re
@@ -25,6 +25,10 @@ __all__ = [
 
 MAX_LENGTH = 255
 EMPTY_FALLBACK = "untitled"
+
+# A trailing ".ext" is the only dot worth keeping. What follows the dot must be
+# alphanumeric and run to the end, so "feat. Roberto" is not mistaken for one.
+_EXTENSION_RE = re.compile(r"\.[A-Za-z0-9]+$")
 
 TRANSLATIONS = {
     ord(k): v
@@ -66,14 +70,30 @@ TRANSLATIONS = {
 }
 
 
+def _underscore_dots(result):
+    """Replace every dot with "_", except a trailing extension separator.
+
+    Replacing rather than deleting keeps a word boundary: "a.b.c.d" becomes
+    "a_b_c.d", not "abc.d". Where a space already followed the dot the extra
+    "_" is merged away later by the _+ collapse.
+    """
+    match = _EXTENSION_RE.search(result)
+    if match:
+        return result[: match.start()].replace(".", "_") + match.group()
+    return result.replace(".", "_")
+
+
 def make_filename(title):
     """Turn title into a robust filename.
 
-    ASCII-only, no spaces or shell-special chars.
+    ASCII-only, lowercase, no spaces or shell-special chars.
     """
     result = title.translate(TRANSLATIONS)
     result = unicodedata.normalize("NFKD", result).encode("ascii", "ignore").decode()
-    result = result.translate(TRANSLATIONS)
+    # .lower() must follow this translate, not precede it: NFKD can yield a
+    # char the table maps to uppercase (fullwidth "＄" -> "$" -> "S").
+    result = result.translate(TRANSLATIONS).lower()
+    result = _underscore_dots(result)
     result = re.sub(r"_+", "_", result).strip("_")
     if not result:
         return EMPTY_FALLBACK
